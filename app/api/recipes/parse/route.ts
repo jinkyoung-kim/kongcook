@@ -2,6 +2,8 @@
 // URL 입력 → 스크래핑 → Claude 파싱 API
 // POST /api/recipes/parse { url, extraText? }
 
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 import { scrapeUrl } from "@/lib/scraper";
 import { parseRecipeWithClaude } from "@/lib/parser";

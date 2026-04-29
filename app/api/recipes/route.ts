@@ -1,6 +1,8 @@
 // 작업일: 2026-04-28
 // 레시피 목록 조회(GET) + 저장(POST) API
 
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { recipes, ingredients, steps } from "@/db/schema";

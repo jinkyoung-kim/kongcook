@@ -2,6 +2,8 @@
 // 자주 등록된 재료 Top N 조회 API
 // GET /api/ingredients/top?limit=5
 
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { ingredients } from "@/db/schema";

@@ -3,6 +3,8 @@
 // ⚠️ 데이터 이전 완료 후 이 파일 삭제 필요
 // POST /api/admin/import { secret, recipes, ingredients, steps }
 
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { recipes, ingredients, steps } from "@/db/schema";

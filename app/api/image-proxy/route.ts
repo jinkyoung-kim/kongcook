@@ -2,6 +2,8 @@
 // 이미지 프록시 라우트 - 핫링크 차단된 외부 이미지(네이버 블로그 등)를 서버 측에서 가져와 브라우저에 전달
 // GET /api/image-proxy?url=<인코딩된 이미지 URL>
 
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 
 // 허용할 외부 이미지 도메인 (보안: 임의 URL 프록시 방지)
