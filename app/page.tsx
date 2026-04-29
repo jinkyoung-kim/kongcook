@@ -255,13 +255,17 @@ export default function HomePage() {
           <div className="border border-orange-200 rounded-xl bg-orange-50/40 p-4 space-y-3">
             {/* 썸네일 + 제목 */}
             <div className="flex gap-3">
-              {preview.thumbnailUrl && (
+              {preview.thumbnailUrl && preview.sourceType !== "instagram" ? (
                 <img
                   src={resolveImageUrl(preview.thumbnailUrl)}
                   alt=""
                   className="w-20 h-14 object-cover rounded-lg shrink-0"
                 />
-              )}
+              ) : preview.sourceType === "instagram" ? (
+                <div className="w-20 h-14 rounded-lg shrink-0 flex items-center justify-center bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400">
+                  <span className="text-2xl">📷</span>
+                </div>
+              ) : null}
               <div className="flex-1 min-w-0">
                 <input
                   type="text"
@@ -413,7 +417,11 @@ export default function HomePage() {
                 className="group bg-white rounded-2xl border border-stone-200 overflow-hidden hover:shadow-md transition-shadow"
               >
                 <div className="aspect-video bg-stone-100 overflow-hidden">
-                  {recipe.thumbnailUrl ? (
+                  {recipe.sourceType === "instagram" ? (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400">
+                      <span className="text-5xl">📷</span>
+                    </div>
+                  ) : recipe.thumbnailUrl ? (
                     <img
                       src={resolveImageUrl(recipe.thumbnailUrl)}
                       alt={recipe.title}
