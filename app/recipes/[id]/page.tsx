@@ -137,11 +137,7 @@ export default function RecipeDetailPage() {
       </Link>
 
       {/* 썸네일 */}
-      {recipe.sourceType === "instagram" ? (
-        <div className="aspect-video rounded-2xl overflow-hidden mb-5 flex items-center justify-center bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400">
-          <span className="text-7xl">📷</span>
-        </div>
-      ) : recipe.thumbnailUrl ? (
+      {recipe.thumbnailUrl && (
         <div className="aspect-video rounded-2xl overflow-hidden mb-5 bg-stone-100">
           <img
             src={resolveImageUrl(recipe.thumbnailUrl)}
@@ -149,7 +145,7 @@ export default function RecipeDetailPage() {
             className="w-full h-full object-cover"
           />
         </div>
-      ) : null}
+      )}
 
       {/* 제목 + 메타 */}
       <div className="mb-5">
