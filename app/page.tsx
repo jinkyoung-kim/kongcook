@@ -58,6 +58,7 @@ export default function HomePage() {
   const [url, setUrl] = useState("");
   const [extraText, setExtraText] = useState("");
   const [parseState, setParseState] = useState<"idle" | "loading" | "preview" | "saving">("idle");
+  const isSaving = parseState === "saving";
   const [preview, setPreview] = useState<ParsedPreview | null>(null);
   const [parseError, setParseError] = useState("");
 
@@ -301,10 +302,10 @@ export default function HomePage() {
               </button>
               <button
                 onClick={handleSave}
-                disabled={parseState === "saving"}
+                disabled={isSaving}
                 className="flex-1 py-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors cursor-pointer"
               >
-                {parseState === "saving" ? "저장 중..." : "저장하기"}
+                {isSaving ? "저장 중..." : "저장하기"}
               </button>
             </div>
           </div>
