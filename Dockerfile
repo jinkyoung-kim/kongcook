@@ -9,9 +9,10 @@ RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
-# 패키지 먼저 복사 (레이어 캐시 활용)
+# 패키지 먼저 복사 → npm ci 레이어 캐시 (package.json 변경 없으면 스킵)
 COPY package*.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 
 # 소스 전체 복사 후 빌드
 COPY . .
