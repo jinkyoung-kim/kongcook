@@ -11,8 +11,7 @@ WORKDIR /app
 
 # 패키지 먼저 복사 → npm ci 레이어 캐시 (package.json 변경 없으면 스킵)
 COPY package*.json ./
-RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
-    npm ci
+RUN npm ci
 
 # 소스 전체 복사 후 빌드
 COPY . .
