@@ -6,7 +6,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useAdminSession } from "@/lib/useAdminSession";
 import { resolveImageUrl } from "@/lib/image";
 
 interface Ingredient {
@@ -76,8 +76,7 @@ export default function RecipeDetailPage() {
   const [checkedSteps, setCheckedSteps] = useState<Set<number>>(new Set());
 
   // 관리자 세션 확인
-  const { data: session } = useSession();
-  const isAdminUser = (session?.user as { isAdmin?: boolean })?.isAdmin ?? false;
+  const { isAdminUser } = useAdminSession();
 
   useEffect(() => {
     fetch(`/api/recipes/${id}`)

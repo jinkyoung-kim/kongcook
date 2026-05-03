@@ -4,8 +4,7 @@
 export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions, isAdmin } from "@/lib/auth";
+import { getSession } from "@/lib/session";
 import { db } from "@/db";
 import { recipes, ingredients, steps } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -53,8 +52,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   // 세션 확인 — 관리자가 아니면 401 반환
-  const session = await getServerSession(authOptions);
-  if (!isAdmin(session?.user?.email)) {
+  const session = await getSession();
+  if (!session?.email) {
     return NextResponse.json({ error: "관리자 권한이 필요합니다" }, { status: 401 });
   }
 
