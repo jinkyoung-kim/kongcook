@@ -17,6 +17,8 @@ export function isAdmin(email?: string | null): boolean {
 }
 
 export const authOptions: AuthOptions = {
+  // secret을 명시적으로 전달 (Railway 등 일부 환경에서 자동 감지 안 될 수 있음)
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
