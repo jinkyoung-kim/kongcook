@@ -216,28 +216,79 @@ async function scrapeYouTube(url: string): Promise<ScrapedContent> {
   if (!content) {
     try {
       const pageRes = await fetch(url, {
-        headers: { "User-Agent": "Mozilla/5.0 (compatible; Kongcook/1.0)" },
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8",
+        },
       });
       const html = await pageRes.text();
 
-      const descMatch = html.match(/"description":\{"runs":\[(.+?)\],"accessibility"/);
-      if (descMatch) {
-        const runsText = descMatch[1].match(/"text":"(.*?)(?<!\\)"/g);
-        if (runsText) {
-          content = runsText
-            .map((t) => t.replace(/^"text":"/, "").replace(/"$/, ""))
-            .join("")
-            .replace(/\\n/g, "\n")
-            .replace(/\\u003c/g, "<")
-            .replace(/\\u003e/g, ">")
-            .slice(0, 3000);
+      // JSON 문자열 안전 추출 함수 (이스케이프 문자 처리)
+      function extractJsonString(src: string, afterKey: string): string | null {
+        const keyIdx = src.indexOf(afterKey);
+        if (keyIdx === -1) return null;
+        const startQuote = src.indexOf('"', keyIdx + afterKey.length);
+        if (startQuote === -1) return null;
+        let i = startQuote + 1;
+        let result = "";
+        while (i < src.length) {
+          const ch = src[i];
+          if (ch === "\\") {
+            const next = src[i + 1];
+            if (next === "n") result += "\n";
+            else if (next === "t") result += "\t";
+            else if (next === "r") result += "";
+            else if (next === '"') result += '"';
+            else if (next === "\\") result += "\\";
+            else if (next === "u") {
+              const hex = src.slice(i + 2, i + 6);
+              result += String.fromCharCode(parseInt(hex, 16));
+              i += 4;
+            } else result += next;
+            i += 2;
+          } else if (ch === '"') {
+            break;
+          } else {
+            result += ch;
+            i++;
+          }
+        }
+        return result.trim() || null;
+      }
+
+      // 방법 1: attributedDescription.content (가장 신뢰도 높음)
+      const attrIdx = html.indexOf('"attributedDescription"');
+      if (attrIdx !== -1) {
+        const extracted = extractJsonString(html.slice(attrIdx), '"content":');
+        if (extracted && extracted.length > 30) {
+          content = extracted.slice(0, 4000);
         }
       }
 
+      // 방법 2: shortDescription (단순 문자열 필드)
       if (!content) {
-        const attrMatch = html.match(/"attributedDescription":\{"content":"(.*?)","commandRuns"/);
-        if (attrMatch) {
-          content = attrMatch[1].replace(/\\n/g, "\n").slice(0, 3000);
+        const shortDesc = extractJsonString(html, '"shortDescription":');
+        if (shortDesc && shortDesc.length > 30) {
+          content = shortDesc.slice(0, 4000);
+        }
+      }
+
+      // 방법 3: description.runs 배열 합치기
+      if (!content) {
+        const descMatch = html.match(/"description":\{"runs":\[([\s\S]+?)\],"accessibility"/);
+        if (descMatch) {
+          const runsText = [...descMatch[1].matchAll(/"text":"((?:[^"\\]|\\.)*)"/g)];
+          if (runsText.length > 0) {
+            content = runsText
+              .map((m) => m[1]
+                .replace(/\\n/g, "\n")
+                .replace(/\\u003c/g, "<")
+                .replace(/\\u003e/g, ">")
+                .replace(/\\u0026/g, "&")
+              )
+              .join("")
+              .slice(0, 4000);
+          }
         }
       }
     } catch {

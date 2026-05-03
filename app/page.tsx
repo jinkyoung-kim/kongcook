@@ -1,10 +1,11 @@
-// 작업일: 2026-04-29
+// 작업일: 2026-04-29 / 수정: 2026-05-03 (관리자만 삭제 버튼 노출)
 // 메인 페이지 - URL 직접 입력 저장 + 검색 토글 + 무한스크롤 목록
 
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { resolveImageUrl } from "@/lib/image";
 
 const LIMIT = 12;
@@ -54,6 +55,10 @@ const SOURCE_COLORS: Record<string, string> = {
 };
 
 export default function HomePage() {
+  // ── 관리자 세션 확인 ──
+  const { data: session } = useSession();
+  const isAdminUser = (session?.user as { isAdmin?: boolean })?.isAdmin ?? false;
+
   // ── URL 입력 & 파싱 상태 ──
   const [url, setUrl] = useState("");
   const [extraText, setExtraText] = useState("");
@@ -428,12 +433,14 @@ export default function HomePage() {
                     <h2 className="font-semibold text-stone-800 text-sm leading-tight line-clamp-2 flex-1">
                       {recipe.title}
                     </h2>
-                    <button
-                      onClick={(e) => handleDelete(recipe.id, e)}
-                      className="text-stone-300 hover:text-red-400 transition-colors text-xs shrink-0 mt-0.5 cursor-pointer"
-                    >
-                      ✕
-                    </button>
+                    {isAdminUser && (
+                      <button
+                        onClick={(e) => handleDelete(recipe.id, e)}
+                        className="text-stone-300 hover:text-red-400 transition-colors text-xs shrink-0 mt-0.5 cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    )}
                   </div>
                   {recipe.description && (
                     <p className="text-stone-500 text-xs line-clamp-2 mb-2">{recipe.description}</p>

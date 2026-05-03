@@ -1,9 +1,11 @@
-// 작업일: 2026-04-28
+// 작업일: 2026-04-28 / 수정: 2026-05-03 (DELETE 관리자 인증 추가)
 // 레시피 단건 조회(GET) + 삭제(DELETE) API
 
 export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions, isAdmin } from "@/lib/auth";
 import { db } from "@/db";
 import { recipes, ingredients, steps } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -45,13 +47,21 @@ export async function GET(
   });
 }
 
-// DELETE /api/recipes/[id]
+// DELETE /api/recipes/[id] — 관리자만 삭제 가능
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // 세션 확인 — 관리자가 아니면 401 반환
+  const session = await getServerSession(authOptions);
+  if (!isAdmin(session?.user?.email)) {
+    return NextResponse.json({ error: "관리자 권한이 필요합니다" }, { status: 401 });
+  }
+
   const { id } = await params;
 
+  await db.delete(ingredients).where(eq(ingredients.recipeId, id));
+  await db.delete(steps).where(eq(steps.recipeId, id));
   await db.delete(recipes).where(eq(recipes.id, id));
 
   return NextResponse.json({ success: true });

@@ -1,4 +1,4 @@
-// 작업일: 2026-04-28
+// 작업일: 2026-04-28 / 수정: 2026-05-03 (관리자만 삭제 버튼 노출)
 // 레시피 상세 페이지
 
 "use client";
@@ -6,6 +6,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { resolveImageUrl } from "@/lib/image";
 
 interface Ingredient {
@@ -73,6 +74,10 @@ export default function RecipeDetailPage() {
   const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [checkedSteps, setCheckedSteps] = useState<Set<number>>(new Set());
+
+  // 관리자 세션 확인
+  const { data: session } = useSession();
+  const isAdminUser = (session?.user as { isAdmin?: boolean })?.isAdmin ?? false;
 
   useEffect(() => {
     fetch(`/api/recipes/${id}`)
@@ -151,12 +156,14 @@ export default function RecipeDetailPage() {
       <div className="mb-5">
         <div className="flex items-start justify-between gap-3">
           <h1 className="text-2xl font-bold text-stone-800 leading-tight">{recipe.title}</h1>
-          <button
-            onClick={handleDelete}
-            className="text-stone-400 hover:text-red-400 transition-colors text-sm shrink-0 mt-1 cursor-pointer"
-          >
-            삭제
-          </button>
+          {isAdminUser && (
+            <button
+              onClick={handleDelete}
+              className="text-stone-400 hover:text-red-400 transition-colors text-sm shrink-0 mt-1 cursor-pointer"
+            >
+              삭제
+            </button>
+          )}
         </div>
 
         {recipe.description && (
