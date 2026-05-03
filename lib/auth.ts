@@ -1,4 +1,4 @@
-// 작업일: 2026-05-03
+// 작업일: 2026-05-03 / 수정: 2026-05-04
 // NextAuth 설정 + 관리자 판별 헬퍼
 // 관리자는 ADMIN_EMAILS 환경변수에 콤마 구분으로 등록 (예: a@gmail.com,b@gmail.com)
 
@@ -33,9 +33,5 @@ export const authOptions: AuthOptions = {
       }
       return session;
     },
-  },
-  pages: {
-    // 커스텀 로그인 페이지 없이 기본 NextAuth 로그인 페이지 사용
-    signIn: "/api/auth/signin",
   },
 };
