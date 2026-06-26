@@ -16,11 +16,12 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  const recipe = await db
+  const rows = await db
     .select()
     .from(recipes)
     .where(eq(recipes.id, id))
-    .get();
+    .limit(1);
+  const recipe = rows[0];
 
   if (!recipe) {
     return NextResponse.json({ error: "레시피를 찾을 수 없습니다" }, { status: 404 });

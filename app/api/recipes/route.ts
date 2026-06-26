@@ -96,7 +96,6 @@ export async function POST(req: NextRequest) {
   const id = randomUUID();
   const now = new Date();
 
-  // better-sqlite3는 동기 방식이므로 순차 insert 사용
   await db.insert(recipes).values({
     id,
     title,
